@@ -7,12 +7,13 @@ const Navbar = ({ user, connect, connected }) => {
 	if (user) {
 		data = new Identicon(user, 420).toString();
 	}
+	let shortenedUser = user.slice(0, 5) + "..." + user.slice(38, )
 	return(
 		<div className="navbar">
 			<h1 className="logo">STCH</h1>
 			{ connected ? <div className="user">
-							{ user }
-							<img width="30" height="30" alt="" src={`data:image/png;base64,${data}`}/>
+							{ window.innerWidth < 611 ? shortenedUser : user }
+							<img width="35" height="35" alt="" src={`data:image/png;base64,${data}`}/>
 						  </div> 
 						: <div onClick={connect} className="wallet">Connect Wallet</div> }
 		</div>
