@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import TokenSwap from '../abis/TokenSwap.json';
+import STCHToken from '../abis/STCHToken.json';
 import Navbar from "./Navbar/Navbar";
 import './App.css';
 
@@ -12,6 +13,8 @@ class App extends Component {
       web3: {},
       connectedUser:"",
       connected: false,
+      exch: {},
+      token: {}
     }
   }
 
@@ -26,8 +29,26 @@ class App extends Component {
   }
 
   loadBlockchainData = async (web3) => {
-    // const accounts = await web3.eth.getAccounts();
-    
+    //The token exchange contract
+    const exchangeAbi = TokenSwap.abi
+    const networkId = await web3.eth.net.getId();
+    const exchangeData = TokenSwap.networks;
+    if (exchangeData[networkId] !== undefined) {
+      const exchangeAddress = exchangeData[networkId].address;
+      const exch = new web3.eth.Contract(exchangeAbi, exchangeAddress);
+      this.setState({ exch })
+    } else {
+      alert('Exchange Contract is not deployed to the detected network')
+    }
+
+    //The stchtoken contract
+    const stchAbi = STCHToken.abi;
+    const stchData = STCHToken.networks;
+    if (stchData[networkId] !== undefined) {
+      const stchAddress = stchData[networkId].address;
+      const token = new web3.eth.Contract(stchAbi, stchAddress);
+      this.setState({ token })
+    }
   }
 
   connect = async () => {
