@@ -15,7 +15,8 @@ class App extends Component {
       connectedUser:"",
       connected: false,
       exch: {},
-      token: {}
+      token: {},
+      userBalance:""
     }
   }
 
@@ -84,11 +85,11 @@ class App extends Component {
   }
 
   render() {
-    const { connectedUser, connected } = this.state;
+    const { connectedUser, connected, web3 } = this.state;
     return (
       <div className="app">
         <Navbar user={connectedUser} connect={this.connect} connected={connected}/>
-        <User />
+        <User user={connectedUser} web3={web3}/>
       </div>
     );
   }

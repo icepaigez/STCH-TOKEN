@@ -4,10 +4,12 @@ import "./navbar.css";
 
 const Navbar = ({ user, connect, connected }) => {
 	let data;
+	let shortenedUser;
 	if (user) {
 		data = new Identicon(user, 420).toString();
+		shortenedUser = user.slice(0, 5) + "..." + user.slice(38, )
 	}
-	let shortenedUser = user.slice(0, 5) + "..." + user.slice(38, )
+	
 	return(
 		<div className="navbar">
 			<h1 className="logo">STCH</h1>

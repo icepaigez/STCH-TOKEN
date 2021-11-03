@@ -1,6 +1,7 @@
 .user_data {
 	border: 1px solid red;
-	padding: 0.2em;
+	padding: 0.2em 0.6em;
 	display: flex;
 	justify-content: space-between;
+	font-size: 0.75em;
 }
