@@ -48,6 +48,7 @@ contract TokenSwap {
     	uint sellRate = (amount * tokenPriceInEth() * 90) / 100; //sell back at a 10% premium
     	require(address(this).balance >= sellRate, "Not enough ether in the exchange");
     	tokenHolders[msg.sender] -= amount;
+    	token.approve(address(this), amount);
     	token.transferFrom(msg.sender, address(this), amount); //get the tokens being sold back
     	seller.transfer(sellRate);//send the ether equivalent
     	emit TokenSold(msg.sender, amount, sellRate);
