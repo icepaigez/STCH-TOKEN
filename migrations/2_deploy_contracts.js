@@ -8,7 +8,7 @@ module.exports = async function(deployer, network) {
 	const token = await STCHTOKEN.deployed();
 
 	let chainlink_aggr;
-	let exchange;
+	let exchange; 
 
 	if (network === 'matic') {
 		chainlink_aggr = '0x0715A7794a1dc8e42615F059dD6e406A6594651A';
