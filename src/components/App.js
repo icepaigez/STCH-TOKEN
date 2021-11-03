@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import TokenSwap from '../abis/TokenSwap.json';
 import STCHToken from '../abis/STCHToken.json';
 import Navbar from "./Navbar/Navbar";
+import User from "./UserData/UserData";
 import './App.css';
 
 class App extends Component {
@@ -87,6 +88,7 @@ class App extends Component {
     return (
       <div className="app">
         <Navbar user={connectedUser} connect={this.connect} connected={connected}/>
+        <User />
       </div>
     );
   }
