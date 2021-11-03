@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: NO LICENSE
 pragma solidity ^0.8.0;
 
-import "./STCHTOKEN.sol";
+import "./interfaces/StchTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract TokenSwap {
 
 	AggregatorV3Interface internal priceFeed;
-	STCHTOKEN token;
+	StchTokenInterface internal token;
 	uint rate = 1 * 10**18; //$1/token converted to wei
 
 	event TokenPurchased(address receiver, uint amount, uint tokenPriceInEth);
@@ -18,16 +18,16 @@ contract TokenSwap {
 	constructor(address _tokenAddress, address _priceFeedAddress) {
 		require(_tokenAddress != address(0x0), "Token address cannot be a null-address");
 		priceFeed = AggregatorV3Interface(_priceFeedAddress);
-		token = STCHTOKEN(_tokenAddress);
+		token = StchTokenInterface(_tokenAddress);
 	}
 
-	function currentEthPrice() view returns (uint) {
+	function currentEthPrice() private view returns (uint) {
     	(,int256 answer, , ,) = priceFeed.latestRoundData();
     	uint ethPrice = uint(answer);
     	return ethPrice / 10**8;
     }
 
-    function tokenPriceInEth() view returns (uint) {
+    function tokenPriceInEth() public view returns (uint) {
     	return rate / currentEthPrice();
     }
 
