@@ -1,0 +1,16 @@
+.navbar {
+	border: 1px solid black;
+	display: flex;
+	padding: 0.3em;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.logo {
+	border: 1px solid red;
+	margin: 0;
+}
+
+.wallet {
+	border: 1px solid black;
+}

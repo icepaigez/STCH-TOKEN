@@ -25,8 +25,8 @@ module.exports = {
           providerOrUrl: endpointUrl
         })
       },
-      gas: 5000000,
-      gasPrice: 25000000000,
+      skipDryRun: true,
+      gasPrice: 10e9,
       network_id: 42
     },
     matic: {
