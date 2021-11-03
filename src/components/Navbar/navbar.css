@@ -12,5 +12,12 @@
 }
 
 .wallet {
-	border: 1px solid black;
+	cursor: pointer;
+	color: black;
+    border-color: #6c757d;
+    font-weight: 400;
+    text-align: center;
+    border: 1px solid #6c757d;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.25rem;
 }
