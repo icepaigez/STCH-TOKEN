@@ -45,11 +45,10 @@ contract TokenSwap {
     	address payable seller = payable(msg.sender);
     	require(token.balanceOf(msg.sender) >= amount, "Not enough tokens");
     	require(tokenHolders[msg.sender] > 0, "Only token holders can sell back to the exchange");
-    	// uint sellRate = (amount * tokenPriceInEth() * 90) / 100; //sell back at a 10% premium
+    	//sell back at a 10% premium
     	uint sellRate = (((amount * tokenPriceInEth()) / 10**28) * 90) / 100;
     	require(address(this).balance >= sellRate, "Not enough ether in the exchange");
     	tokenHolders[msg.sender] -= amount;
-    	token.approve(address(this), amount);
     	token.transferFrom(msg.sender, address(this), amount); //get the tokens being sold back
     	seller.transfer(sellRate);//send the ether equivalent
     	emit TokenSold(msg.sender, amount, sellRate);

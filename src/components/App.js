@@ -20,7 +20,9 @@ class App extends Component {
       userBalance:"",
       tokenPrice:"",
       etherAmount:"",
-      tokenAmount:""
+      tokenAmount:"",
+      exchangeAddress:"",
+      tokenPriceLoading: false,
     }
   }
 
@@ -42,7 +44,7 @@ class App extends Component {
     if (exchangeData[networkId] !== undefined) {
       const exchangeAddress = exchangeData[networkId].address;
       const exch = new web3.eth.Contract(exchangeAbi, exchangeAddress);
-      this.setState({ exch })
+      this.setState({ exch, exchangeAddress })
       await this.getTokenPrice();
     } else {
       alert('Exchange Contract is not deployed to the detected network')
@@ -88,7 +90,7 @@ class App extends Component {
   buyTokens = async() => {
     const { exch, etherAmount, connectedUser, web3 } = this.state;
     try {
-      let tx = await exch.methods.buyToken().send({from:connectedUser, value:web3.utils.toWei(etherAmount)})
+      let tx = await exch.methods.buyToken().send({from:connectedUser, value:web3.utils.toWei(etherAmount, 'ether')})
       console.log(tx)
       this.refs.child.updateEtherAmount() //call the child function to clear the form when button is clicked
     } catch (err) {
@@ -97,8 +99,18 @@ class App extends Component {
   }
 
   sellTokens = async() => {
-    console.log('selling tokens')
-    this.refs.child.updateTokenAmount()
+    const { exch, tokenAmount, connectedUser, web3, token, exchangeAddress } = this.state;
+    try {
+      let approve = await token.methods.approve(exchangeAddress, web3.utils.toWei(tokenAmount, 'ether')).send({from:connectedUser});
+      console.log("approved", approve)
+      if (approve.status) {
+        let tx = await exch.methods.sellToken(web3.utils.toWei(tokenAmount, 'ether')).send({from:connectedUser})
+        console.log(tx)
+        this.refs.child.updateTokenAmount()
+      }
+    } catch (err) {
+      console.error("An error occurred when selling stch tokens", err)
+    }
   }
 
 
@@ -106,8 +118,13 @@ class App extends Component {
     const { exch, web3 } = this.state;
     try {
       let tokenPrice = await exch.methods.tokenPriceInEth().call()
-      tokenPrice = web3.utils.fromWei(tokenPrice)
-      this.setState({ tokenPrice })
+      if (tokenPrice !== "") {
+        this.setState({
+          tokenPriceLoading: true
+        })
+        tokenPrice = web3.utils.fromWei(tokenPrice)
+         this.setState({ tokenPrice })
+      }
     } catch (err) {
       console.error("An error occurred in getting the current token price from the blockchain >>", err)
     }
@@ -130,12 +147,12 @@ class App extends Component {
   }
 
   render() {
-    const { connectedUser, connected, tokenPrice } = this.state;
+    const { connectedUser, connected, tokenPrice, tokenPriceLoading } = this.state;
     
     return (
       <div className="app">
         <Navbar user={connectedUser} connect={this.connect} connected={connected}/>
-        <User tokenPrice={tokenPrice}/>
+        <User tokenPriceLoading={tokenPriceLoading} tokenPrice={tokenPrice}/>
         <Main ref="child" sellTokens={this.sellTokens} buyTokens={this.buyTokens} sendEtherAmount={this.getEtherAmount} sendTokenAmount={this.getTokenAmount}/>
       </div>
     );
