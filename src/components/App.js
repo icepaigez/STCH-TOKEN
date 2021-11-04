@@ -147,10 +147,7 @@ class App extends Component {
       let tokenPrice = await exch.methods.tokenPriceInEth().call()
       if (tokenPrice !== "") {
         tokenPrice = web3.utils.fromWei(tokenPrice)
-        this.setState({ tokenPrice })
-        this.setState({
-          tokenPriceLoading: false
-        })
+        this.setState({ tokenPrice, tokenPriceLoading: false })
       }
     } catch (err) {
       console.error("An error occurred in getting the current token price from the blockchain >>", err)
@@ -171,6 +168,10 @@ class App extends Component {
         connectedUser: acc[0]
       })
     }
+  }
+
+  componentWillUnmount() {
+    localStorage.setItem("connected", false);
   }
 
   render() {

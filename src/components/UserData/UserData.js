@@ -9,7 +9,7 @@ const User = ({ tokenPrice, tokenPriceLoading, connectedUser, token, web3 }) => 
 		tokenPrice = String(tokenPrice.toFixed(7))
 	}
 
-	if (Object.keys(token).length !== 0 && connectedUser !== "") {
+	if (Object.keys(token).length !== 0 && connectedUser !== "" && connectedUser !== undefined) {
 		token.methods.balanceOf(connectedUser).call().then(result => {
 			result = web3.utils.fromWei(result)
 			getTokenBalance(result)
