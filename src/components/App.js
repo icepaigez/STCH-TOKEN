@@ -23,6 +23,7 @@ class App extends Component {
       tokenAmount:"",
       exchangeAddress:"",
       tokenPriceLoading: false,
+      loading: false
     }
   }
 
@@ -55,7 +56,7 @@ class App extends Component {
     const stchData = STCHToken.networks;
     if (stchData[networkId] !== undefined) {
       const stchAddress = stchData[networkId].address;
-      const token = new web3.eth.Contract(stchAbi, stchAddress);
+      const token = new web3.eth.Contract(stchAbi, stchAddress); 
       this.setState({ token })
     }
   }
@@ -89,41 +90,67 @@ class App extends Component {
 
   buyTokens = async() => {
     const { exch, etherAmount, connectedUser, web3 } = this.state;
-    try {
-      let tx = await exch.methods.buyToken().send({from:connectedUser, value:web3.utils.toWei(etherAmount, 'ether')})
-      console.log(tx)
-      this.refs.child.updateEtherAmount() //call the child function to clear the form when button is clicked
-    } catch (err) {
-      console.error("An error occurred when buying stch tokens", err)
+    if (etherAmount !== "") {
+      try {
+        this.setState({
+          loading: true
+        })
+        this.refs.child.updateEtherAmount() //call the child function to clear the form when button is clicked
+        let tx = await exch.methods.buyToken().send({from:connectedUser, value:web3.utils.toWei(etherAmount, 'ether')})
+        if(tx.status) {
+          this.setState({
+            loading: false
+          })
+        }
+      } catch (err) {
+        console.error("An error occurred when buying stch tokens", err)
+        this.setState({
+          loading: false
+        })
+      }
     }
   }
 
   sellTokens = async() => {
     const { exch, tokenAmount, connectedUser, web3, token, exchangeAddress } = this.state;
-    try {
-      let approve = await token.methods.approve(exchangeAddress, web3.utils.toWei(tokenAmount, 'ether')).send({from:connectedUser});
-      console.log("approved", approve)
-      if (approve.status) {
-        let tx = await exch.methods.sellToken(web3.utils.toWei(tokenAmount, 'ether')).send({from:connectedUser})
-        console.log(tx)
-        this.refs.child.updateTokenAmount()
+    if (tokenAmount !== "") {
+      try {
+        this.setState({
+          loading: true
+        })
+        this.refs.child.updateTokenAmount();
+        let approve = await token.methods.approve(exchangeAddress, web3.utils.toWei(tokenAmount, 'ether')).send({from:connectedUser});
+        if (approve.status) {
+          let tx = await exch.methods.sellToken(web3.utils.toWei(tokenAmount, 'ether')).send({from:connectedUser})
+          if (tx.status) {
+            this.setState({
+              loading: false
+            })
+          }
+        }
+      } catch (err) {
+        console.error("An error occurred when selling stch tokens", err)
+        this.setState({
+          loading: false
+        })
       }
-    } catch (err) {
-      console.error("An error occurred when selling stch tokens", err)
     }
   }
 
 
   getTokenPrice = async() => {
     const { exch, web3 } = this.state;
+    this.setState({
+      tokenPriceLoading: true
+    })
     try {
       let tokenPrice = await exch.methods.tokenPriceInEth().call()
       if (tokenPrice !== "") {
-        this.setState({
-          tokenPriceLoading: true
-        })
         tokenPrice = web3.utils.fromWei(tokenPrice)
-         this.setState({ tokenPrice })
+        this.setState({ tokenPrice })
+        this.setState({
+          tokenPriceLoading: false
+        })
       }
     } catch (err) {
       console.error("An error occurred in getting the current token price from the blockchain >>", err)
@@ -147,13 +174,13 @@ class App extends Component {
   }
 
   render() {
-    const { connectedUser, connected, tokenPrice, tokenPriceLoading } = this.state;
+    const { connectedUser, connected, tokenPrice, tokenPriceLoading, loading, token, web3 } = this.state;
     
     return (
       <div className="app">
         <Navbar user={connectedUser} connect={this.connect} connected={connected}/>
-        <User tokenPriceLoading={tokenPriceLoading} tokenPrice={tokenPrice}/>
-        <Main ref="child" sellTokens={this.sellTokens} buyTokens={this.buyTokens} sendEtherAmount={this.getEtherAmount} sendTokenAmount={this.getTokenAmount}/>
+        <User web3={web3} connectedUser={connectedUser} token={token} tokenPriceLoading={tokenPriceLoading} tokenPrice={tokenPrice}/>
+        <Main loading={loading} ref="child" sellTokens={this.sellTokens} buyTokens={this.buyTokens} sendEtherAmount={this.getEtherAmount} sendTokenAmount={this.getTokenAmount}/>
       </div>
     );
   }

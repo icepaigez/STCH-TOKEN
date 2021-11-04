@@ -40,18 +40,21 @@ class Main extends Component {
 	}
 
 	render() {
-		const { buyTokens, sellTokens } = this.props;
+		const { buyTokens, sellTokens, loading } = this.props;
 		const { etherAmount, tokenAmount } = this.state;
 		return(
 			<div className="main">
-				<div className="buying">
-					<input value={etherAmount} onChange={this.getEtherAmount} type="text" placeholder="EtherAmount"/>
-					<button onClick={buyTokens} className="buy_token">Buy Stch Tokens</button>
+				<div className="transact">
+					<div className="buying">
+						<input value={etherAmount} onChange={this.getEtherAmount} type="text" placeholder="EtherAmount"/>
+						<button onClick={buyTokens} className="buy_token">Buy Stch Tokens</button>
+					</div>
+					<div className="selling">
+						<input onChange={this.getTokenAmount} value={tokenAmount} type="text" placeholder="TokenAmount"/>
+						<button onClick={sellTokens} className="sell_token">Sell Stch Tokens</button>
+					</div>
 				</div>
-				<div className="selling">
-					<input onChange={this.getTokenAmount} value={tokenAmount} type="text" placeholder="TokenAmount"/>
-					<button onClick={sellTokens} className="sell_token">Sell Stch Tokens</button>
-				</div>
+				{ loading ? <h2 className="loader">Transacting with the blockchain</h2> : null }
 			</div>
 		)
 	}
