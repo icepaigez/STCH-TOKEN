@@ -1,14 +1,16 @@
 .main {
 	display: flex;
+    /*border: 1px solid red;*/
+    justify-content: space-between;
 }
 
 .buy_token {
 	cursor: pointer;
-	color: black;
+	/*color: black;
     border-color: #6c757d;
     font-weight: 400;
     text-align: center;
     border: 1px solid #6c757d;
     padding: 0.5rem 0.5rem;
-    border-radius: 0.25rem;
+    border-radius: 0.25rem;*/
 }

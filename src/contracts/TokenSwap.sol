@@ -13,7 +13,7 @@ contract TokenSwap {
 	event TokenPurchased(address receiver, uint amount, uint tokenPriceInEth);
 	event TokenSold(address sender, uint tokenAmount, uint etherAmount);
 
-	mapping (address => uint) tokenHolders;
+	mapping (address => uint) public tokenHolders;
 
 	constructor(address _tokenAddress, address _priceFeedAddress) {
 		require(_tokenAddress != address(0x0), "Token address cannot be a null-address");
@@ -24,17 +24,17 @@ contract TokenSwap {
 	function currentEthPrice() private view returns (uint) {
     	(,int256 answer, , ,) = priceFeed.latestRoundData();
     	uint ethPrice = uint(answer);
-    	return ethPrice / 10**8;
+    	return ethPrice / 10**8; //4590.56636667
     }
 
     function tokenPriceInEth() public view returns (uint) {
-    	return rate / currentEthPrice();
+    	return rate / currentEthPrice(); //217838044399170.86
     }
 
     function buyToken() public payable {
     	uint tokenPrice = tokenPriceInEth();
     	require(msg.value >= tokenPrice, "You need enough Eth for at least 1 token");
-    	uint tokenAmount = msg.value / tokenPrice;
+    	uint tokenAmount = (msg.value / tokenPrice) * 10**18; //413xxxx
     	require(token.balanceOf(address(this)) >= tokenAmount, "Not enough tokens in the exchange");
     	tokenHolders[msg.sender] += tokenAmount;
     	token.transfer(msg.sender, tokenAmount);
@@ -45,7 +45,8 @@ contract TokenSwap {
     	address payable seller = payable(msg.sender);
     	require(token.balanceOf(msg.sender) >= amount, "Not enough tokens");
     	require(tokenHolders[msg.sender] > 0, "Only token holders can sell back to the exchange");
-    	uint sellRate = (amount * tokenPriceInEth() * 90) / 100; //sell back at a 10% premium
+    	// uint sellRate = (amount * tokenPriceInEth() * 90) / 100; //sell back at a 10% premium
+    	uint sellRate = (((amount * tokenPriceInEth()) / 10**28) * 90) / 100;
     	require(address(this).balance >= sellRate, "Not enough ether in the exchange");
     	tokenHolders[msg.sender] -= amount;
     	token.approve(address(this), amount);

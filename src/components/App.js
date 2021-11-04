@@ -19,7 +19,8 @@ class App extends Component {
       token: {},
       userBalance:"",
       tokenPrice:"",
-      etherAmount:""
+      etherAmount:"",
+      tokenAmount:""
     }
   }
 
@@ -28,7 +29,6 @@ class App extends Component {
       let web3 = await new Web3(Web3.givenProvider || "http://localhost:7545");
       this.setState({ web3 });
       await this.loadBlockchainData(web3);
-      await this.getTokenPrice();
     } else {
       alert('Please install a blockchain wallet')
     }
@@ -43,6 +43,7 @@ class App extends Component {
       const exchangeAddress = exchangeData[networkId].address;
       const exch = new web3.eth.Contract(exchangeAbi, exchangeAddress);
       this.setState({ exch })
+      await this.getTokenPrice();
     } else {
       alert('Exchange Contract is not deployed to the detected network')
     }
@@ -78,10 +79,26 @@ class App extends Component {
     })
   }
 
-  buyTokens = async () => {
-    const { exch, etherAmount } = this.state;
-    console.log(etherAmount)
-    this.refs.child.updateEtherAmount() //call the child function to clear the form when button is clicked
+  getTokenAmount = value => {
+    this.setState({
+      tokenAmount: value
+    })
+  }
+
+  buyTokens = async() => {
+    const { exch, etherAmount, connectedUser, web3 } = this.state;
+    try {
+      let tx = await exch.methods.buyToken().send({from:connectedUser, value:web3.utils.toWei(etherAmount)})
+      console.log(tx)
+      this.refs.child.updateEtherAmount() //call the child function to clear the form when button is clicked
+    } catch (err) {
+      console.error("An error occurred when buying stch tokens", err)
+    }
+  }
+
+  sellTokens = async() => {
+    console.log('selling tokens')
+    this.refs.child.updateTokenAmount()
   }
 
 
@@ -113,13 +130,13 @@ class App extends Component {
   }
 
   render() {
-    const { connectedUser, connected, web3, tokenPrice } = this.state;
+    const { connectedUser, connected, tokenPrice } = this.state;
     
     return (
       <div className="app">
         <Navbar user={connectedUser} connect={this.connect} connected={connected}/>
-        <User tokenPrice={tokenPrice} user={connectedUser} web3={web3}/>
-        <Main ref="child" buyTokens={this.buyTokens} sendEtherAmount={this.getEtherAmount}/>
+        <User tokenPrice={tokenPrice}/>
+        <Main ref="child" sellTokens={this.sellTokens} buyTokens={this.buyTokens} sendEtherAmount={this.getEtherAmount} sendTokenAmount={this.getTokenAmount}/>
       </div>
     );
   }
