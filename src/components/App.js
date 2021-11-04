@@ -4,6 +4,7 @@ import TokenSwap from '../abis/TokenSwap.json';
 import STCHToken from '../abis/STCHToken.json';
 import Navbar from "./Navbar/Navbar";
 import User from "./UserData/UserData";
+import Main from "./Main/Main";
 import './App.css';
 
 class App extends Component {
@@ -16,7 +17,9 @@ class App extends Component {
       connected: false,
       exch: {},
       token: {},
-      userBalance:""
+      userBalance:"",
+      tokenPrice:"",
+      etherAmount:""
     }
   }
 
@@ -25,6 +28,7 @@ class App extends Component {
       let web3 = await new Web3(Web3.givenProvider || "http://localhost:7545");
       this.setState({ web3 });
       await this.loadBlockchainData(web3);
+      await this.getTokenPrice();
     } else {
       alert('Please install a blockchain wallet')
     }
@@ -68,6 +72,30 @@ class App extends Component {
     }
   }
 
+  getEtherAmount = value => {
+    this.setState({
+      etherAmount: value
+    })
+  }
+
+  buyTokens = async () => {
+    const { exch, etherAmount } = this.state;
+    console.log(etherAmount)
+    this.refs.child.updateEtherAmount() //call the child function to clear the form when button is clicked
+  }
+
+
+  getTokenPrice = async() => {
+    const { exch, web3 } = this.state;
+    try {
+      let tokenPrice = await exch.methods.tokenPriceInEth().call()
+      tokenPrice = web3.utils.fromWei(tokenPrice)
+      this.setState({ tokenPrice })
+    } catch (err) {
+      console.error("An error occurred in getting the current token price from the blockchain >>", err)
+    }
+  }
+
   async componentDidMount() {
     await this.loadWeb3()
   }
@@ -85,11 +113,13 @@ class App extends Component {
   }
 
   render() {
-    const { connectedUser, connected, web3 } = this.state;
+    const { connectedUser, connected, web3, tokenPrice } = this.state;
+    
     return (
       <div className="app">
         <Navbar user={connectedUser} connect={this.connect} connected={connected}/>
-        <User user={connectedUser} web3={web3}/>
+        <User tokenPrice={tokenPrice} user={connectedUser} web3={web3}/>
+        <Main ref="child" buyTokens={this.buyTokens} sendEtherAmount={this.getEtherAmount}/>
       </div>
     );
   }
