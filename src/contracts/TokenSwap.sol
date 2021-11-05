@@ -24,17 +24,17 @@ contract TokenSwap {
 	function currentEthPrice() private view returns (uint) {
     	(,int256 answer, , ,) = priceFeed.latestRoundData();
     	uint ethPrice = uint(answer);
-    	return ethPrice / 10**8; //4590.56636667
+    	return ethPrice; //459056636667
     }
 
     function tokenPriceInEth() public view returns (uint) {
-    	return rate / currentEthPrice(); //217838044399170.86
+    	return (rate * 10**8) / currentEthPrice(); //217838044399170.88
     }
 
     function buyToken() public payable {
     	uint tokenPrice = tokenPriceInEth();
     	require(msg.value >= tokenPrice, "You need enough Eth for at least 1 token");
-    	uint tokenAmount = (msg.value / tokenPrice) * 10**18; //413xxxx
+    	uint tokenAmount = (msg.value * 10**18) / tokenPrice; //413xxxx
     	require(token.balanceOf(address(this)) >= tokenAmount, "Not enough tokens in the exchange");
     	tokenHolders[msg.sender] += tokenAmount;
     	token.transfer(msg.sender, tokenAmount);
