@@ -38,14 +38,18 @@ class App extends Component {
   }
 
   loadBlockchainData = async (web3) => {
+    
+    const networkId = await web3.eth.net.getId();
+
     //The token exchange contract
     const exchangeAbi = TokenSwap.abi
-    const networkId = await web3.eth.net.getId();
     const exchangeData = TokenSwap.networks;
     if (exchangeData[networkId] !== undefined) {
       const exchangeAddress = exchangeData[networkId].address;
       const exch = new web3.eth.Contract(exchangeAbi, exchangeAddress);
       this.setState({ exch, exchangeAddress })
+
+      //once the exchange has loaded, call a function from it
       await this.getTokenPrice();
     } else {
       alert('Exchange Contract is not deployed to the detected network')
@@ -168,10 +172,6 @@ class App extends Component {
         connectedUser: acc[0]
       })
     }
-  }
-
-  componentWillUnmount() {
-    localStorage.setItem("connected", false);
   }
 
   render() {
