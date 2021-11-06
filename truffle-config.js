@@ -60,4 +60,4 @@ module.exports = {
   }
 }
 //truffle run verify Contract --network kovan : to verify the smart contracts on etherscan
-//during truffle tests, compile contracts first, then use the --compile-none flag to prevent recompiling everytime you run test
+//during truffle tests, compile contracts first with truffle compile, then use the --compile-none flag to prevent recompiling everytime you run test

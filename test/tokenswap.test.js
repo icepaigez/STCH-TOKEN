@@ -72,6 +72,4 @@ contract("TokenSwap", ([deployer, ...others]) => {
 			//assert.equal(exchangeMaticBalance, exchMaticBalanceAfterPurchase);
 		})
 	})
-
-	
 })
