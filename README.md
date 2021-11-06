@@ -16,7 +16,7 @@ This is version 1.0 of the STCH project deployed to the Polygon testnet
 You can view the deployed exchange and token contracts at the Kovan etherscan addresses below:
 * Dex - [TokenSwap](https://mumbai.polygonscan.com/address/0x0F69Cc3BCAf6Bc8DB847aC74D93AdeC99D73b232#code)
 * Token - [STCHToken]( https://mumbai.polygonscan.com/address/0xf09a433E8d775651Cce4C789B78a04d2DB6DD582#code)                                                                                   
-You can test buying and selling of the STCH tokens at [Exchange](https://stch-6e643.web.app/)
+You can test buying and selling of the STCH tokens at the [Exchange](https://stch-6e643.web.app/)
 
 ## Technologies
 * [Solidity](https://docs.soliditylang.org/en/v0.8.4/) - v0.8.0
