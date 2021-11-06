@@ -9,18 +9,18 @@ module.exports = async function(deployer, network) {
 
 	let chainlink_aggr;
 	let exchange; 
+	let deployedBy = deployer["networks"][network]["from"]
 
 	if (network === 'matic') {
 		chainlink_aggr = '0x0715A7794a1dc8e42615F059dD6e406A6594651A';
-		await deployer.deploy(TokenSwap, token.address, chainlink_aggr);
+		await deployer.deploy(TokenSwap, token.address, chainlink_aggr, {from:deployedBy, value:"1000000000000000000"});
 		exchange = await TokenSwap.deployed();
 	} else if (network === 'kovan') {
 		chainlink_aggr = '0x9326BFA02ADD2366b30bacB125260Af641031331';
-		await deployer.deploy(TokenSwap, token.address, chainlink_aggr);
+		await deployer.deploy(TokenSwap, token.address, chainlink_aggr, {from:deployedBy, value:"1000000000000000000"});
 		exchange = await TokenSwap.deployed();
 	}
 
-	let deployedBy = deployer["networks"][network]["from"]
 	let tokenBalance = await token.balanceOf(deployedBy);
 	tokenBalance = web3.utils.toBN(tokenBalance);
 	if (exchange !== undefined) {

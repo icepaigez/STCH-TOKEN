@@ -15,7 +15,7 @@ contract TokenSwap {
 
 	mapping (address => uint) public tokenHolders;
 
-	constructor(address _tokenAddress, address _priceFeedAddress) {
+	constructor(address _tokenAddress, address _priceFeedAddress) payable {
 		require(_tokenAddress != address(0x0), "Token address cannot be a null-address");
 		priceFeed = AggregatorV3Interface(_priceFeedAddress);
 		token = StchTokenInterface(_tokenAddress);
@@ -44,7 +44,7 @@ contract TokenSwap {
     function sellToken(uint amount) public {
     	address payable seller = payable(msg.sender);
     	require(token.balanceOf(msg.sender) >= amount, "Not enough tokens");
-    	require(tokenHolders[msg.sender] > 0, "Only token holders can sell back to the exchange");
+    	require(tokenHolders[msg.sender] >= amount, "Only token holders can sell back to the exchange");
     	//sell back at a 10% premium
     	uint sellRate = (((amount * tokenPriceInEth()) / 10**18) * 90) / 100;
     	require(address(this).balance >= sellRate, "Not enough ether in the exchange");
