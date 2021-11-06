@@ -32,6 +32,8 @@ List of features ready and TODOs for future development
 
 To-do list:
 * Make the exchange contract upgradeable
+* Add other wallet connections on the frontend
+* Build a proper UI
 * Add Multisig functionality
 * Integrate a DAO
 
